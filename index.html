@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cybene — Cybersécurité & Innovation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── RESET ─────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --grey-100: #f5f5f5;
+      --grey-200: #e0e0e0;
+      --grey-700: #3a3a3a;
+      --grey-900: #111111;
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'Space Grotesk', sans-serif;
+    }
+
+    /* ─── CURSOR ─────────────────────────────────────── */
+    body { cursor: none; }
+    #cursor {
+      position: fixed; top: 0; left: 0; width: 12px; height: 12px;
+      background: var(--white); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width .2s, height .2s, background .2s;
+      mix-blend-mode: difference;
+    }
+    #cursor-trail {
+      position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+      border: 1px solid rgba(255,255,255,.4); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: left .1s ease, top .1s ease, width .3s, height .3s;
+      mix-blend-mode: difference;
+    }
+    body:has(a:hover) #cursor,
+    body:has(button:hover) #cursor { width: 20px; height: 20px; }
+
+    /* ─── NOISE GRAIN ─────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9000; opacity: .5;
+    }
+
+    /* ─── BASE ───────────────────────────────────────── */
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── SCROLLBAR ──────────────────────────────────── */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--white); }
+
+    /* ─── REVEAL ANIMATION ───────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+    .reveal-delay-5 { transition-delay: .5s; }
+
+    /* ─── NAV ────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 2rem 4rem;
+      transition: background .4s, backdrop-filter .4s, padding .4s;
+    }
+    nav.scrolled {
+      background: rgba(0,0,0,.85);
+      backdrop-filter: blur(16px);
+      padding: 1.2rem 4rem;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 1rem; }
+    .nav-logo img { height: 36px; width: auto; filter: invert(0); }
+    .nav-logo span {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex; gap: 3rem;
+      list-style: none;
+      font-size: .8rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .nav-links a {
+      position: relative;
+      opacity: .6;
+      transition: opacity .3s;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--white);
+      transition: width .3s cubic-bezier(.16,1,.3,1);
+    }
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      font-size: .75rem; letter-spacing: .2em; text-transform: uppercase;
+      padding: .7rem 1.8rem;
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 999px;
+      transition: background .3s, color .3s, border-color .3s;
+    }
+    .nav-cta:hover {
+      background: var(--white); color: var(--black);
+      border-color: var(--white);
+    }
+
+    /* ─── HERO ───────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 0 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      animation: gridDrift 30s linear infinite;
+    }
+    @keyframes gridDrift {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(80px); }
+    }
+    .hero-eyebrow {
+      font-size: .7rem; letter-spacing: .4em; text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+      margin-bottom: 2rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block; width: 40px; height: 1px;
+      background: rgba(255,255,255,.3);
+    }
+    .hero-title {
+      font-family: var(--font-head);
+      font-size: clamp(4rem, 10vw, 11rem);
+      font-weight: 800;
+      line-height: .9;
+      letter-spacing: -.02em;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    .hero-title .line {
+      display: block;
+      overflow: hidden;
+    }
+    .hero-title .line span {
+      display: block;
+      animation: lineReveal .9s cubic-bezier(.16,1,.3,1) both;
+    }
+    .hero-title .line:nth-child(1) span { animation-delay: .1s; }
+    .hero-title .line:nth-child(2) span { animation-delay: .25s; }
+    .hero-title .line:nth-child(3) span { animation-delay: .4s; }
+    @keyframes lineReveal {
+      from { transform: translateY(110%); }
+      to   { transform: translateY(0); }
+    }
+    .hero-title .outline {
+      -webkit-text-stroke: 1px rgba(255,255,255,.3);
+      color: transparent;
+    }
+    .hero-subtitle {
+      max-width: 420px;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 3rem;
+      animation: fadeUp .9s .6s cubic-bezier(.16,1,.3,1) both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-actions {
+      display: flex; gap: 1.2rem; align-items: center;
+      animation: fadeUp .9s .75s cubic-bezier(.16,1,.3,1) both;
+    }
+    .btn-primary {
+      padding: .9rem 2.4rem;
+      background: var(--white); color: var(--black);
+      font-family: var(--font-body);
+      font-size: .8rem; font-weight: 600;
+      letter-spacing: .15em; text-transform: uppercase;
+      border: none; border-radius: 999px;
+      cursor: none;
+      position: relative; overflow: hidden;
+      transition: transform .3s;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,.1), transparent);
+      transform: translateX(-100%);
+      transition: transform .4s;
+    }
+    .btn-primary:hover { transform: scale(1.04); }
+    .btn-primary:hover::after { transform: translateX(0); }
+    .btn-ghost {
+      font-size: .8rem; letter-spacing: .15em; text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      display: flex; align-items: center; gap: .6rem;
+      transition: color .3s, gap .3s;
+    }
+    .btn-ghost:hover { color: var(--white); gap: 1rem; }
+    .btn-ghost svg { transition: transform .3s; }
+    .btn-ghost:hover svg { transform: translateX(4px); }
+
+    .hero-scroll {
+      position: absolute; bottom: 3rem; right: 4rem;
+      display: flex; flex-direction: column; align-items: center; gap: .8rem;
+      font-size: .65rem; letter-spacing: .3em; text-transform: uppercase;
+      color: rgba(255,255,255,.25);
+      animation: fadeUp .9s 1s cubic-bezier(.16,1,.3,1) both;
+    }
+    .hero-scroll::after {
+      content: '';
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, rgba(255,255,255,.3), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(.5); opacity: .3; }
+    }
+
+    .hero-counter {
+      position: absolute; bottom: 3rem; left: 4rem;
+      display: flex; gap: 4rem;
+      animation: fadeUp .9s 1s cubic-bezier(.16,1,.3,1) both;
+    }
+    .counter-item { text-align: left; }
+    .counter-number {
+      font-family: var(--font-head);
+      font-size: 2.2rem; font-weight: 800;
+      line-height: 1;
+    }
+    .counter-label {
+      font-size: .65rem; letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      margin-top: .3rem;
+    }
+
+    /* ─── MARQUEE ────────────────────────────────────── */
+    .marquee-section {
+      border-top: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      padding: 1.2rem 0; overflow: hidden;
+      background: rgba(255,255,255,.02);
+    }
+    .marquee-track {
+      display: flex; gap: 0;
+      width: max-content;
+      animation: marquee 25s linear infinite;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .marquee-item {
+      display: flex; align-items: center; gap: 2rem;
+      padding: 0 2rem;
+      font-size: .7rem; letter-spacing: .3em; text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      white-space: nowrap;
+    }
+    .marquee-dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: rgba(255,255,255,.3); flex-shrink: 0;
+    }
+
+    /* ─── SECTION BASE ───────────────────────────────── */
+    section { padding: 10rem 4rem; }
+    .section-label {
+      font-size: .65rem; letter-spacing: .4em; text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .section-label::before {
+      content: '';
+      display: block; width: 24px; height: 1px;
+      background: rgba(255,255,255,.3);
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: clamp(2.5rem, 5vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -.02em;
+    }
+
+    /* ─── SERVICES ───────────────────────────────────── */
+    #services { background: var(--black); }
+    .services-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: end;
+      margin-bottom: 6rem;
+    }
+    .services-desc {
+      font-size: 1.05rem; line-height: 1.8;
+      color: rgba(255,255,255,.45);
+      max-width: 440px;
+      margin-top: auto;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .service-card {
+      padding: 3.5rem 3rem;
+      border-right: 1px solid rgba(255,255,255,.08);
+      position: relative; overflow: hidden;
+      transition: background .4s;
+      cursor: none;
+    }
+    .service-card:last-child { border-right: none; }
+    .service-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--white);
+      transform: translateY(100%);
+      transition: transform .5s cubic-bezier(.16,1,.3,1);
+    }
+    .service-card:hover::before { transform: translateY(0); }
+    .service-card:hover .service-num,
+    .service-card:hover .service-title,
+    .service-card:hover .service-text,
+    .service-card:hover .service-tags span,
+    .service-card:hover .service-icon { color: var(--black); }
+    .service-card:hover .service-tags span {
+      border-color: rgba(0,0,0,.2); background: rgba(0,0,0,.06);
+    }
+    .service-card:hover .service-arrow { transform: translate(4px, -4px); opacity: 1; }
+    .service-content { position: relative; z-index: 1; }
+    .service-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 3rem;
+    }
+    .service-num {
+      font-family: var(--font-head);
+      font-size: .8rem; font-weight: 700;
+      color: rgba(255,255,255,.2);
+      transition: color .4s;
+    }
+    .service-icon {
+      font-size: 1.8rem;
+      color: rgba(255,255,255,.6);
+      transition: color .4s;
+    }
+    .service-arrow {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,.3);
+      opacity: 0;
+      transition: transform .3s, opacity .3s, color .4s;
+    }
+    .service-title {
+      font-family: var(--font-head);
+      font-size: 1.6rem; font-weight: 700;
+      margin-bottom: 1rem; line-height: 1.1;
+      transition: color .4s;
+    }
+    .service-text {
+      font-size: .9rem; line-height: 1.7;
+      color: rgba(255,255,255,.4);
+      margin-bottom: 2rem;
+      transition: color .4s;
+    }
+    .service-tags {
+      display: flex; flex-wrap: wrap; gap: .5rem;
+    }
+    .service-tags span {
+      font-size: .65rem; letter-spacing: .15em; text-transform: uppercase;
+      padding: .35rem .9rem;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      transition: border-color .4s, background .4s, color .4s;
+    }
+
+    /* ─── APPROACH ───────────────────────────────────── */
+    #approche {
+      background: rgba(255,255,255,.02);
+      border-top: 1px solid rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .approach-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 8rem;
+      align-items: start;
+    }
+    .approach-sticky {
+      position: sticky; top: 8rem;
+    }
+    .approach-text {
+      font-size: 1rem; line-height: 1.8;
+      color: rgba(255,255,255,.4);
+      margin-top: 2rem;
+    }
+    .approach-steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      padding: 3rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      display: grid; grid-template-columns: 80px 1fr;
+      gap: 2rem; align-items: start;
+      transition: background .3s;
+    }
+    .step:first-child { border-top: 1px solid rgba(255,255,255,.07); }
+    .step-num {
+      font-family: var(--font-head);
+      font-size: 3rem; font-weight: 800;
+      color: rgba(255,255,255,.08);
+      line-height: 1; padding-top: .2rem;
+      transition: color .4s;
+    }
+    .step:hover .step-num { color: rgba(255,255,255,.4); }
+    .step-title {
+      font-family: var(--font-head);
+      font-size: 1.4rem; font-weight: 700;
+      margin-bottom: .8rem;
+    }
+    .step-text {
+      font-size: .9rem; line-height: 1.7;
+      color: rgba(255,255,255,.4);
+    }
+
+    /* ─── ABOUT ──────────────────────────────────────── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8rem;
+      align-items: center;
+    }
+    .about-visual {
+      position: relative; aspect-ratio: 4/5;
+    }
+    .about-frame {
+      width: 100%; height: 100%;
+      border: 1px solid rgba(255,255,255,.1);
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .about-logo-large {
+      width: 60%; opacity: .08;
+      filter: invert(1);
+      animation: logoFloat 6s ease-in-out infinite;
+    }
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-15px) scale(1.03); }
+    }
+    .about-badge {
+      position: absolute; bottom: 2rem; right: 2rem;
+      width: 120px; height: 120px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      animation: rotateBadge 20s linear infinite;
+    }
+    @keyframes rotateBadge {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    .about-badge-inner {
+      animation: rotateBadge 20s linear infinite reverse;
+    }
+    .about-badge-num {
+      font-family: var(--font-head);
+      font-size: 1.8rem; font-weight: 800; line-height: 1;
+    }
+    .about-badge-label {
+      font-size: .55rem; letter-spacing: .2em;
+      text-transform: uppercase; color: rgba(255,255,255,.4);
+    }
+    .about-corner {
+      position: absolute;
+      width: 20px; height: 20px;
+    }
+    .about-corner.tl { top: 0; left: 0;
+      border-top: 1px solid rgba(255,255,255,.5);
+      border-left: 1px solid rgba(255,255,255,.5); }
+    .about-corner.tr { top: 0; right: 0;
+      border-top: 1px solid rgba(255,255,255,.5);
+      border-right: 1px solid rgba(255,255,255,.5); }
+    .about-corner.bl { bottom: 0; left: 0;
+      border-bottom: 1px solid rgba(255,255,255,.5);
+      border-left: 1px solid rgba(255,255,255,.5); }
+    .about-corner.br { bottom: 0; right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.5);
+      border-right: 1px solid rgba(255,255,255,.5); }
+    .about-content {}
+    .about-title { margin-bottom: 2rem; }
+    .about-body {
+      font-size: 1rem; line-height: 1.8;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 3rem;
+    }
+    .about-body strong { color: var(--white); font-weight: 600; }
+    .about-values {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .value-item {
+      padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,.08);
+      transition: border-color .3s, background .3s;
+    }
+    .value-item:hover {
+      border-color: rgba(255,255,255,.25);
+      background: rgba(255,255,255,.03);
+    }
+    .value-icon { font-size: 1.4rem; margin-bottom: .8rem; }
+    .value-title {
+      font-family: var(--font-head);
+      font-size: .95rem; font-weight: 700;
+      margin-bottom: .4rem;
+    }
+    .value-text {
+      font-size: .8rem; line-height: 1.6;
+      color: rgba(255,255,255,.35);
+    }
+
+    /* ─── CTA BAND ───────────────────────────────────── */
+    #cta {
+      padding: 8rem 4rem;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,.06);
+      position: relative; overflow: hidden;
+    }
+    .cta-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(255,255,255,.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-title {
+      font-family: var(--font-head);
+      font-size: clamp(2.5rem, 6vw, 7rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -.03em;
+      margin-bottom: 2rem;
+    }
+    .cta-title .outlined {
+      -webkit-text-stroke: 1.5px rgba(255,255,255,.25);
+      color: transparent;
+    }
+    .cta-sub {
+      font-size: 1rem; color: rgba(255,255,255,.4);
+      margin-bottom: 3.5rem;
+    }
+    .cta-actions {
+      display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+    }
+    .btn-outline {
+      padding: .9rem 2.4rem;
+      border: 1px solid rgba(255,255,255,.25);
+      font-family: var(--font-body);
+      font-size: .8rem; font-weight: 600;
+      letter-spacing: .15em; text-transform: uppercase;
+      border-radius: 999px; cursor: none;
+      transition: border-color .3s, background .3s, color .3s;
+      color: var(--white);
+    }
+    .btn-outline:hover {
+      border-color: var(--white);
+      background: rgba(255,255,255,.07);
+    }
+    .btn-email {
+      display: flex; align-items: center; gap: .7rem;
+      font-size: .8rem; color: rgba(255,255,255,.4);
+      letter-spacing: .05em;
+      padding: .9rem 0;
+      transition: color .3s;
+    }
+    .btn-email:hover { color: var(--white); }
+
+    /* ─── CONTACT ────────────────────────────────────── */
+    #contact {
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding: 8rem 4rem;
+    }
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8rem;
+    }
+    .contact-info {}
+    .contact-item {
+      margin-bottom: 3rem;
+    }
+    .contact-item-label {
+      font-size: .65rem; letter-spacing: .35em; text-transform: uppercase;
+      color: rgba(255,255,255,.25);
+      margin-bottom: .8rem;
+    }
+    .contact-item-value {
+      font-family: var(--font-head);
+      font-size: 1.1rem; font-weight: 600;
+    }
+    .contact-item-value a {
+      position: relative;
+      transition: opacity .3s;
+    }
+    .contact-item-value a::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 1px; background: var(--white);
+      transition: width .3s;
+    }
+    .contact-item-value a:hover::after { width: 100%; }
+    .contact-form {}
+    .form-row { margin-bottom: 1.5rem; }
+    .form-label {
+      display: block;
+      font-size: .65rem; letter-spacing: .3em; text-transform: uppercase;
+      color: rgba(255,255,255,.3);
+      margin-bottom: .6rem;
+    }
+    .form-input, .form-textarea {
+      width: 100%;
+      background: transparent;
+      border: none; border-bottom: 1px solid rgba(255,255,255,.12);
+      padding: .8rem 0;
+      font-family: var(--font-body); font-size: 1rem;
+      color: var(--white);
+      outline: none;
+      transition: border-color .3s;
+    }
+    .form-input:focus, .form-textarea:focus {
+      border-color: rgba(255,255,255,.5);
+    }
+    .form-input::placeholder, .form-textarea::placeholder {
+      color: rgba(255,255,255,.15);
+    }
+    .form-textarea { height: 120px; resize: none; }
+    .form-submit {
+      margin-top: 2.5rem;
+      padding: 1rem 2.8rem;
+      background: var(--white); color: var(--black);
+      font-family: var(--font-body);
+      font-size: .8rem; font-weight: 600;
+      letter-spacing: .15em; text-transform: uppercase;
+      border: none; border-radius: 999px;
+      cursor: none;
+      transition: transform .3s, opacity .3s;
+    }
+    .form-submit:hover { transform: scale(1.04); }
+
+    /* ─── FOOTER ─────────────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding: 3rem 4rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-logo {
+      display: flex; align-items: center; gap: .8rem;
+    }
+    .footer-logo img { height: 28px; filter: invert(0); }
+    .footer-logo span {
+      font-family: var(--font-head);
+      font-weight: 800; font-size: .95rem;
+      letter-spacing: .12em; text-transform: uppercase;
+    }
+    .footer-copy {
+      font-size: .75rem; color: rgba(255,255,255,.2);
+      letter-spacing: .05em;
+    }
+    .footer-links {
+      display: flex; gap: 2.5rem; list-style: none;
+    }
+    .footer-links a {
+      font-size: .75rem; letter-spacing: .1em;
+      color: rgba(255,255,255,.3);
+      transition: color .3s;
+    }
+    .footer-links a:hover { color: var(--white); }
+
+    /* ─── MOBILE ─────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1.5rem 2rem; }
+      nav.scrolled { padding: 1rem 2rem; }
+      .nav-links, .nav-cta { display: none; }
+      #hero, section, #cta, #contact, footer { padding-left: 2rem; padding-right: 2rem; }
+      .hero-title { font-size: clamp(3rem, 14vw, 6rem); }
+      .services-header { grid-template-columns: 1fr; gap: 2rem; margin-bottom: 3rem; }
+      .services-grid { grid-template-columns: 1fr; }
+      .service-card { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); }
+      .approach-layout { grid-template-columns: 1fr; gap: 4rem; }
+      .approach-sticky { position: static; }
+      #about { grid-template-columns: 1fr; gap: 4rem; padding-top: 6rem; padding-bottom: 6rem; }
+      .about-visual { aspect-ratio: 4/3; }
+      .contact-layout { grid-template-columns: 1fr; gap: 4rem; }
+      footer { flex-direction: column; gap: 2rem; text-align: center; }
+      .hero-counter { display: none; }
+      .hero-scroll { display: none; }
+      .about-values { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">
+    <img src="cybene.png" alt="Cybene" />
+    <span>Cybene</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#approche">Approche</a></li>
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="#contact">Démarrer un projet</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+
+  <p class="hero-eyebrow">Cybene — Cybersécurité &amp; Innovation</p>
+
+  <h1 class="hero-title">
+    <span class="line"><span>Sécuriser.</span></span>
+    <span class="line"><span>Former.</span></span>
+    <span class="line outline"><span>Innover.</span></span>
+  </h1>
+
+  <p class="hero-subtitle">
+    Conseil, formation et création de solutions numériques pour un internet
+    plus sûr — pensé pour les entreprises et les citoyens français.
+  </p>
+
+  <div class="hero-actions">
+    <a class="btn-primary" href="#services">Découvrir nos services</a>
+    <a class="btn-ghost" href="#contact">
+      Prendre contact
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+
+  <div class="hero-counter">
+    <div class="counter-item">
+      <div class="counter-number">3</div>
+      <div class="counter-label">Expertises</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-number">100%</div>
+      <div class="counter-label">Français</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-number">0</div>
+      <div class="counter-label">Compromis sécurité</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-item">Audit de sécurité<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Pentesting<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Formation cybersécurité<span class="marquee-dot"></span></div>
+    <div class="marquee-item">RGPD & conformité<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Développement SaaS<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Sensibilisation<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Analyse des risques<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Solutions souveraines<span class="marquee-dot"></span></div>
+    <!-- duplicate for loop -->
+    <div class="marquee-item">Audit de sécurité<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Pentesting<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Formation cybersécurité<span class="marquee-dot"></span></div>
+    <div class="marquee-item">RGPD & conformité<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Développement SaaS<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Sensibilisation<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Analyse des risques<span class="marquee-dot"></span></div>
+    <div class="marquee-item">Solutions souveraines<span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="services-header">
+    <div>
+      <p class="section-label reveal">Expertises</p>
+      <h2 class="section-title reveal reveal-delay-1">
+        Ce que nous<br/>faisons
+      </h2>
+    </div>
+    <p class="services-desc reveal reveal-delay-2">
+      Cybene intervient à chaque étape de votre sécurité numérique —
+      du diagnostic à la formation, jusqu'à la création d'outils
+      conçus pour protéger les Français.
+    </p>
+  </div>
+
+  <div class="services-grid">
+    <!-- Pentest -->
+    <div class="service-card reveal">
+      <div class="service-content">
+        <div class="service-top">
+          <span class="service-num">01</span>
+          <span class="service-arrow">↗</span>
+        </div>
+        <div class="service-icon">🔓</div>
+        <h3 class="service-title">Pentester<br/>& Red Team</h3>
+        <p class="service-text">
+          Tests d'intrusion offensifs sur vos applications web, réseaux,
+          infrastructures et systèmes. Nous pensons comme un attaquant
+          pour mieux vous défendre.
+        </p>
+        <div class="service-tags">
+          <span>Web App</span>
+          <span>Réseau</span>
+          <span>Social Eng.</span>
+          <span>Red Team</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formation -->
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-content">
+        <div class="service-top">
+          <span class="service-num">02</span>
+          <span class="service-arrow">↗</span>
+        </div>
+        <div class="service-icon">📡</div>
+        <h3 class="service-title">Formateur<br/>Cybersécurité</h3>
+        <p class="service-text">
+          Programmes de sensibilisation et formations techniques adaptées
+          à tous les niveaux — collaborateurs, équipes IT, étudiants.
+        </p>
+        <div class="service-tags">
+          <span>Sensibilisation</span>
+          <span>Ateliers</span>
+          <span>E-learning</span>
+          <span>Certifications</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SaaS -->
+    <div class="service-card reveal reveal-delay-4">
+      <div class="service-content">
+        <div class="service-top">
+          <span class="service-num">03</span>
+          <span class="service-arrow">↗</span>
+        </div>
+        <div class="service-icon">⚡</div>
+        <h3 class="service-title">Création<br/>SaaS</h3>
+        <p class="service-text">
+          Développement de solutions numériques utiles et accessibles,
+          pensées pour les citoyens français avec la sécurité au cœur.
+        </p>
+        <div class="service-tags">
+          <span>Souveraineté</span>
+          <span>Open Source</span>
+          <span>Privacy</span>
+          <span>Made in France</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPROCHE -->
+<section id="approche">
+  <div class="approach-layout">
+    <div class="approach-sticky">
+      <p class="section-label reveal">Notre méthode</p>
+      <h2 class="section-title reveal reveal-delay-1">Comment<br/>nous<br/>travaillons</h2>
+      <p class="approach-text reveal reveal-delay-2">
+        Une approche rigoureuse, transparente et orientée résultats.
+        Chaque mission commence par une écoute attentive.
+      </p>
+    </div>
+    <div class="approach-steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div>
+          <h3 class="step-title">Diagnostic initial</h3>
+          <p class="step-text">
+            Analyse complète de votre contexte, de vos actifs numériques et
+            de votre niveau d'exposition actuel. Nous cartographions vos risques
+            avant toute recommandation.
+          </p>
+        </div>
+      </div>
+      <div class="step reveal reveal-delay-1">
+        <div class="step-num">02</div>
+        <div>
+          <h3 class="step-title">Stratégie sur-mesure</h3>
+          <p class="step-text">
+            Chaque organisation est unique. Nous construisons un plan d'action
+            adapté à vos enjeux réels — pas de solution générique.
+          </p>
+        </div>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-num">03</div>
+        <div>
+          <h3 class="step-title">Implémentation & accompagnement</h3>
+          <p class="step-text">
+            Mise en œuvre des solutions, formation de vos équipes et
+            accompagnement dans la durée pour ancrer une vraie culture
+            de la sécurité.
+          </p>
+        </div>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-num">04</div>
+        <div>
+          <h3 class="step-title">Audit & amélioration continue</h3>
+          <p class="step-text">
+            La cybersécurité n'est pas un projet fini. Nous assurons
+            un suivi régulier et adaptons votre posture aux nouvelles menaces.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-visual reveal">
+    <div class="about-frame">
+      <div class="about-corner tl"></div>
+      <div class="about-corner tr"></div>
+      <div class="about-corner bl"></div>
+      <div class="about-corner br"></div>
+      <img class="about-logo-large" src="cybene.png" alt="Cybene" />
+      <div class="about-badge">
+        <div class="about-badge-inner">
+          <div class="about-badge-num">FR</div>
+          <div class="about-badge-label">Made in<br/>France</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="about-content">
+    <p class="section-label reveal">À propos</p>
+    <h2 class="section-title about-title reveal reveal-delay-1">
+      L'expertise<br/>au service<br/>de la sécurité
+    </h2>
+    <p class="about-body reveal reveal-delay-2">
+      <strong>Cybene</strong> est une entreprise française de cybersécurité
+      fondée avec une conviction simple : la sécurité numérique doit être
+      <strong>accessible à tous</strong> — entreprises, associations,
+      collectivités et citoyens.<br/><br/>
+      Nous combinons expertise technique approfondie et pédagogie pour
+      construire un numérique plus <strong>sûr et souverain</strong>.
+    </p>
+
+    <div class="about-values">
+      <div class="value-item reveal reveal-delay-1">
+        <div class="value-icon">🔒</div>
+        <div class="value-title">Confiance</div>
+        <p class="value-text">Transparence totale dans nos méthodes et nos résultats.</p>
+      </div>
+      <div class="value-item reveal reveal-delay-2">
+        <div class="value-icon">🇫🇷</div>
+        <div class="value-title">Souveraineté</div>
+        <p class="value-text">Solutions 100% françaises, données hébergées en France.</p>
+      </div>
+      <div class="value-item reveal reveal-delay-3">
+        <div class="value-icon">⚡</div>
+        <div class="value-title">Excellence</div>
+        <p class="value-text">Rigueur technique et veille constante sur les menaces.</p>
+      </div>
+      <div class="value-item reveal reveal-delay-4">
+        <div class="value-icon">🤝</div>
+        <div class="value-title">Accessibilité</div>
+        <p class="value-text">La cybersécurité n'est pas réservée aux grands groupes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-bg"></div>
+  <h2 class="cta-title reveal">
+    Prêt à<br/><span class="outlined">sécuriser</span><br/>votre avenir ?
+  </h2>
+  <p class="cta-sub reveal reveal-delay-1">
+    Parlons de votre projet — le premier échange est gratuit.
+  </p>
+  <div class="cta-actions reveal reveal-delay-2">
+    <a class="btn-primary" href="#contact">Démarrer maintenant</a>
+    <a class="btn-outline" href="mailto:contact@cybene.fr">Envoyer un email</a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <p class="section-label reveal">Contact</p>
+  <h2 class="section-title reveal reveal-delay-1" style="margin-bottom:5rem">
+    Travaillons<br/>ensemble
+  </h2>
+  <div class="contact-layout">
+    <div class="contact-info reveal">
+      <div class="contact-item">
+        <p class="contact-item-label">Email</p>
+        <p class="contact-item-value">
+          <a href="mailto:contact@cybene.fr">contact@cybene.fr</a>
+        </p>
+      </div>
+      <div class="contact-item">
+        <p class="contact-item-label">Localisation</p>
+        <p class="contact-item-value">France</p>
+      </div>
+      <div class="contact-item">
+        <p class="contact-item-label">Disponibilité</p>
+        <p class="contact-item-value">Missions & formations</p>
+      </div>
+      <div class="contact-item">
+        <p class="contact-item-label">Réponse</p>
+        <p class="contact-item-value">Sous 24h</p>
+      </div>
+    </div>
+    <form class="contact-form reveal reveal-delay-2" onsubmit="return false;">
+      <div class="form-row">
+        <label class="form-label">Nom complet</label>
+        <input class="form-input" type="text" placeholder="Jean Dupont" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="jean@entreprise.fr" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Sujet</label>
+        <input class="form-input" type="text" placeholder="Audit de sécurité, formation..." />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Message</label>
+        <textarea class="form-textarea" placeholder="Décrivez votre besoin..."></textarea>
+      </div>
+      <button class="form-submit" type="submit">Envoyer le message</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <img src="cybene.png" alt="Cybene" />
+    <span>Cybene</span>
+  </div>
+  <p class="footer-copy">© 2026 Cybene. Tous droits réservés.</p>
+  <ul class="footer-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</footer>
+
+<script>
+  /* ── CURSOR ─────────────────────────────────────── */
+  const cursor = document.getElementById('cursor');
+  const trail  = document.getElementById('cursor-trail');
+  let mx = 0, my = 0, tx = 0, ty = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+  });
+  function animTrail() {
+    tx += (mx - tx) * .12;
+    ty += (my - ty) * .12;
+    trail.style.left = tx + 'px';
+    trail.style.top  = ty + 'px';
+    requestAnimationFrame(animTrail);
+  }
+  animTrail();
+
+  /* ── NAV SCROLL ──────────────────────────────────── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  /* ── REVEAL ON SCROLL ────────────────────────────── */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ── SMOOTH HOVER CURSOR SCALE ───────────────────── */
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+    });
+  });
+</script>
+</body>
+</html>
