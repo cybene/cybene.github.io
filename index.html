@@ -617,73 +617,31 @@
     #contact {
       border-top: 1px solid rgba(255,255,255,.06);
       padding: 8rem 4rem;
+      text-align: center;
     }
-    .contact-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8rem;
-    }
-    .contact-info {}
-    .contact-item {
-      margin-bottom: 3rem;
-    }
-    .contact-item-label {
-      font-size: .65rem; letter-spacing: .35em; text-transform: uppercase;
-      color: rgba(255,255,255,.25);
-      margin-bottom: .8rem;
-    }
-    .contact-item-value {
+    .contact-email-link {
+      display: inline-flex; align-items: center; gap: 1rem;
       font-family: var(--font-head);
-      font-size: 1.1rem; font-weight: 600;
-    }
-    .contact-item-value a {
+      font-size: clamp(1.4rem, 3.5vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -.01em;
       position: relative;
-      transition: opacity .3s;
+      margin-top: 3rem;
     }
-    .contact-item-value a::after {
+    .contact-email-link::after {
       content: '';
-      position: absolute; bottom: -2px; left: 0;
-      width: 0; height: 1px; background: var(--white);
-      transition: width .3s;
+      position: absolute; bottom: -6px; left: 0;
+      width: 0; height: 2px; background: var(--white);
+      transition: width .5s cubic-bezier(.16,1,.3,1);
     }
-    .contact-item-value a:hover::after { width: 100%; }
-    .contact-form {}
-    .form-row { margin-bottom: 1.5rem; }
-    .form-label {
-      display: block;
-      font-size: .65rem; letter-spacing: .3em; text-transform: uppercase;
-      color: rgba(255,255,255,.3);
-      margin-bottom: .6rem;
+    .contact-email-link:hover::after { width: 100%; }
+    .contact-email-link svg { opacity: .4; transition: opacity .3s, transform .3s; }
+    .contact-email-link:hover svg { opacity: 1; transform: translate(4px, -4px); }
+    .contact-availability {
+      margin-top: 2rem;
+      font-size: .75rem; letter-spacing: .3em; text-transform: uppercase;
+      color: rgba(255,255,255,.2);
     }
-    .form-input, .form-textarea {
-      width: 100%;
-      background: transparent;
-      border: none; border-bottom: 1px solid rgba(255,255,255,.12);
-      padding: .8rem 0;
-      font-family: var(--font-body); font-size: 1rem;
-      color: var(--white);
-      outline: none;
-      transition: border-color .3s;
-    }
-    .form-input:focus, .form-textarea:focus {
-      border-color: rgba(255,255,255,.5);
-    }
-    .form-input::placeholder, .form-textarea::placeholder {
-      color: rgba(255,255,255,.15);
-    }
-    .form-textarea { height: 120px; resize: none; }
-    .form-submit {
-      margin-top: 2.5rem;
-      padding: 1rem 2.8rem;
-      background: var(--white); color: var(--black);
-      font-family: var(--font-body);
-      font-size: .8rem; font-weight: 600;
-      letter-spacing: .15em; text-transform: uppercase;
-      border: none; border-radius: 999px;
-      cursor: none;
-      transition: transform .3s, opacity .3s;
-    }
-    .form-submit:hover { transform: scale(1.04); }
 
     /* ─── FOOTER ─────────────────────────────────────── */
     footer {
@@ -1043,50 +1001,18 @@
 
 <!-- CONTACT -->
 <section id="contact">
-  <p class="section-label reveal">Contact</p>
-  <h2 class="section-title reveal reveal-delay-1" style="margin-bottom:5rem">
+  <p class="section-label reveal" style="justify-content:center">Contact</p>
+  <h2 class="section-title reveal reveal-delay-1" style="text-align:center; margin-bottom:1rem">
     Travaillons<br/>ensemble
   </h2>
-  <div class="contact-layout">
-    <div class="contact-info reveal">
-      <div class="contact-item">
-        <p class="contact-item-label">Email</p>
-        <p class="contact-item-value">
-          <a href="mailto:contact@cybene.fr">contact@cybene.fr</a>
-        </p>
-      </div>
-      <div class="contact-item">
-        <p class="contact-item-label">Localisation</p>
-        <p class="contact-item-value">France</p>
-      </div>
-      <div class="contact-item">
-        <p class="contact-item-label">Disponibilité</p>
-        <p class="contact-item-value">Missions & formations</p>
-      </div>
-      <div class="contact-item">
-        <p class="contact-item-label">Réponse</p>
-        <p class="contact-item-value">Sous 24h</p>
-      </div>
-    </div>
-    <form class="contact-form reveal reveal-delay-2" onsubmit="return false;">
-      <div class="form-row">
-        <label class="form-label">Nom complet</label>
-        <input class="form-input" type="text" placeholder="Jean Dupont" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">Email</label>
-        <input class="form-input" type="email" placeholder="jean@entreprise.fr" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">Sujet</label>
-        <input class="form-input" type="text" placeholder="Audit de sécurité, formation..." />
-      </div>
-      <div class="form-row">
-        <label class="form-label">Message</label>
-        <textarea class="form-textarea" placeholder="Décrivez votre besoin..."></textarea>
-      </div>
-      <button class="form-submit" type="submit">Envoyer le message</button>
-    </form>
+  <div style="display:flex; flex-direction:column; align-items:center;">
+    <a class="contact-email-link reveal reveal-delay-2" href="mailto:contact@cybene.fr">
+      contact@cybene.fr
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M7 17L17 7M17 7H7M17 7v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <p class="contact-availability reveal reveal-delay-3">Réponse sous 24h · Missions & formations</p>
   </div>
 </section>
 
